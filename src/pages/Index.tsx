@@ -1,11 +1,24 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import WorkflowCanvas from '@/components/WorkflowCanvas';
+import ChatInterface from '@/components/ChatInterface';
 
 const Index = () => {
+  const [nodeCount, setNodeCount] = useState(1);
+
+  const handleNodeAdd = () => {
+    setNodeCount(prev => prev + 1);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="h-screen flex bg-background overflow-hidden">
+      {/* Canvas Area */}
+      <div className="flex-1 relative">
+        <WorkflowCanvas onNodeAdd={handleNodeAdd} />
+      </div>
+      
+      {/* Chat Interface */}
+      <div className="w-80 flex-shrink-0">
+        <ChatInterface />
       </div>
     </div>
   );

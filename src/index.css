@@ -2,41 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* AI Agent Builder Design System - Timeless, Minimal Aesthetic */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    /* Canvas & Background */
+    --background: 250 20% 99%;
+    --foreground: 224 15% 15%;
+    --canvas: 240 15% 97%;
+    
+    /* UI Elements */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 224 15% 15%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
+    --popover-foreground: 224 15% 15%;
+    
+    /* Brand Colors */
+    --primary: 260 85% 65%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 260 85% 75%;
+    
+    /* Neutral Palette */
+    --secondary: 220 15% 95%;
+    --secondary-foreground: 224 15% 15%;
+    
+    --muted: 220 15% 96%;
+    --muted-foreground: 224 10% 45%;
+    
+    --accent: 260 85% 65%;
+    --accent-foreground: 0 0% 98%;
+    
+    /* Status Colors */
+    --success: 142 75% 45%;
+    --warning: 45 90% 60%;
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    /* Interface */
+    --border: 220 15% 90%;
+    --input: 220 15% 95%;
+    --ring: 260 85% 65%;
+    
+    /* Chat Interface */
+    --chat-background: 0 0% 100%;
+    --chat-border: 220 15% 92%;
+    --message-user: 260 85% 65%;
+    --message-ai: 220 15% 96%;
+    
+    /* Node Colors */
+    --node-trigger: 142 75% 45%;
+    --node-action: 217 90% 60%;
+    --node-condition: 45 90% 60%;
+    --node-output: 260 85% 65%;
+    
+    /* Effects */
+    --shadow-soft: 220 15% 85%;
+    --shadow-medium: 220 15% 75%;
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-canvas: linear-gradient(180deg, hsl(var(--canvas)), hsl(var(--background)));
+    
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,33 +82,61 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* Canvas & Background */
+    --background: 224 20% 8%;
+    --foreground: 220 15% 92%;
+    --canvas: 224 15% 10%;
+    
+    /* UI Elements */
+    --card: 224 20% 12%;
+    --card-foreground: 220 15% 92%;
+    
+    --popover: 224 20% 12%;
+    --popover-foreground: 220 15% 92%;
+    
+    /* Brand Colors */
+    --primary: 260 85% 70%;
+    --primary-foreground: 224 20% 8%;
+    --primary-glow: 260 85% 80%;
+    
+    /* Neutral Palette */
+    --secondary: 224 15% 18%;
+    --secondary-foreground: 220 15% 92%;
+    
+    --muted: 224 15% 15%;
+    --muted-foreground: 220 10% 65%;
+    
+    --accent: 260 85% 70%;
+    --accent-foreground: 224 20% 8%;
+    
+    /* Status Colors */
+    --success: 142 75% 55%;
+    --warning: 45 90% 70%;
+    --destructive: 0 75% 65%;
+    --destructive-foreground: 0 0% 98%;
+    
+    /* Interface */
+    --border: 224 15% 20%;
+    --input: 224 15% 18%;
+    --ring: 260 85% 70%;
+    
+    /* Chat Interface */
+    --chat-background: 224 20% 12%;
+    --chat-border: 224 15% 22%;
+    --message-user: 260 85% 70%;
+    --message-ai: 224 15% 18%;
+    
+    /* Node Colors */
+    --node-trigger: 142 75% 55%;
+    --node-action: 217 90% 65%;
+    --node-condition: 45 90% 70%;
+    --node-output: 260 85% 70%;
+    
+    /* Effects */
+    --shadow-soft: 224 50% 5%;
+    --shadow-medium: 224 50% 3%;
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-canvas: linear-gradient(180deg, hsl(var(--canvas)), hsl(var(--background)));
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +154,44 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
+}
+
+/* Workflow Canvas Styles */
+.workflow-canvas .react-flow__controls {
+  @apply bg-card border border-border rounded-lg shadow-sm;
+}
+
+.workflow-canvas .react-flow__controls button {
+  @apply bg-transparent border-none text-foreground hover:bg-muted;
+}
+
+.workflow-canvas .react-flow__minimap {
+  @apply bg-card border border-border rounded-lg shadow-sm;
+}
+
+.workflow-node {
+  @apply transition-all duration-200 hover:shadow-md;
+}
+
+.workflow-node:hover {
+  @apply scale-105;
+}
+
+.handle-minimal {
+  @apply transition-all duration-200;
+}
+
+.handle-minimal:hover {
+  @apply scale-150;
+}
+
+/* Custom scrollbar for chat */
+.scroll-area [data-radix-scroll-area-scrollbar] {
+  @apply w-2;
+}
+
+.scroll-area [data-radix-scroll-area-thumb] {
+  @apply bg-border rounded-full;
 }
