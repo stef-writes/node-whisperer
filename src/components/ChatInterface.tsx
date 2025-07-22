@@ -19,7 +19,7 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Hi! I'm your AI workflow assistant. Try saying something like 'Add a trigger node' or 'Create an action that sends an email'.",
+      content: "Strategic Intelligence Network initialized. I'm your AI command interface for multi-agent deployment and coordination. Deploy agents like 'Create a Nexus data processor' or 'Initialize Scout intelligence gathering'.",
       sender: 'ai',
       timestamp: new Date(),
     },
@@ -41,35 +41,57 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
     scrollToBottom();
   }, [messages]);
 
-  const parseNodeCommand = (text: string) => {
+  const parseAgentCommand = (text: string) => {
     const lowerText = text.toLowerCase();
     
-    // Simple keyword detection for demo
-    if (lowerText.includes('trigger')) {
+    // Enhanced agent detection with realistic configurations
+    if (lowerText.includes('nexus') || lowerText.includes('data receiver')) {
       return {
-        type: 'trigger',
-        label: 'New Trigger',
-        description: 'Starts the workflow when conditions are met'
+        agentType: 'nexus',
+        role: 'Data Stream Processor',
+        description: 'Handles incoming data validation and preliminary processing',
+        status: 'processing',
+        metrics: { processed: Math.floor(Math.random() * 1000), queue: Math.floor(Math.random() * 20), uptime: '1h 23m' }
       };
-    } else if (lowerText.includes('action') || lowerText.includes('email') || lowerText.includes('send')) {
+    } else if (lowerText.includes('quest') || lowerText.includes('assembler') || lowerText.includes('assembly')) {
       return {
-        type: 'action',
-        label: 'Send Email',
-        description: 'Sends an email to specified recipients'
+        agentType: 'quest',
+        role: 'Mission Coordinator',
+        description: 'Orchestrates complex multi-step data assembly operations',
+        status: 'active',
+        metrics: { processed: Math.floor(Math.random() * 800), queue: Math.floor(Math.random() * 15), uptime: '2h 45m' }
       };
-    } else if (lowerText.includes('condition') || lowerText.includes('if') || lowerText.includes('check')) {
+    } else if (lowerText.includes('scout') || lowerText.includes('intelligence') || lowerText.includes('analysis')) {
       return {
-        type: 'condition',
-        label: 'Check Condition',
-        description: 'Evaluates a condition and branches the workflow'
+        agentType: 'scout',
+        role: 'Tactical Analyst',
+        description: 'Performs deep intelligence gathering and strategic assessment',
+        status: 'idle',
+        metrics: { processed: Math.floor(Math.random() * 600), queue: 0, uptime: '45m' }
       };
-    } else if (lowerText.includes('output') || lowerText.includes('result') || lowerText.includes('end')) {
+    } else if (lowerText.includes('orchestrator') || lowerText.includes('command') || lowerText.includes('coordinate')) {
       return {
-        type: 'output',
-        label: 'Output Result',
-        description: 'Displays the final result of the workflow'
+        agentType: 'orchestrator',
+        role: 'System Commander',
+        description: 'Manages overall system strategy and agent coordination',
+        status: 'active',
+        metrics: { processed: Math.floor(Math.random() * 2000), queue: Math.floor(Math.random() * 5), uptime: '5h 12m' }
       };
     }
+    
+    // Auto-suggest based on keywords
+    if (lowerText.includes('agent') || lowerText.includes('add') || lowerText.includes('create')) {
+      const agentTypes = ['nexus', 'quest', 'scout', 'orchestrator'];
+      const randomType = agentTypes[Math.floor(Math.random() * agentTypes.length)];
+      return {
+        agentType: randomType,
+        role: `Auto-generated ${randomType}`,
+        description: `Automatically created ${randomType} agent based on your request`,
+        status: 'idle',
+        metrics: { processed: 0, queue: 0, uptime: '0m' }
+      };
+    }
+    
     return null;
   };
 
@@ -86,23 +108,30 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    // Check if the message is requesting a node
-    const nodeData = parseNodeCommand(input);
+    // Check if the message is requesting an agent
+    const agentData = parseAgentCommand(input);
     
-    // Simulate AI response
+    // Simulate AI response with agent context
     setTimeout(() => {
-      let aiResponse = "I understand you'd like to work with your workflow. ";
+      let aiResponse = "";
       
-      if (nodeData) {
-        aiResponse += `I've added a ${nodeData.type} node to your canvas. `;
-        onNodeRequest?.(nodeData);
+      if (agentData) {
+        aiResponse = `Agent deployment initiated. ${agentData.agentType.toUpperCase()} agent "${agentData.role}" has been instantiated with ${agentData.status} status. Current metrics: ${agentData.metrics?.processed || 0} items processed.`;
+        onNodeRequest?.(agentData);
         
-        // Add node to canvas using the global function
-        if ((window as any).addWorkflowNode) {
-          (window as any).addWorkflowNode(nodeData);
+        // Add agent to canvas using the global function
+        if ((window as any).addAgent) {
+          (window as any).addAgent(agentData);
         }
       } else {
-        aiResponse += "Try asking me to add specific nodes like 'add a trigger node' or 'create an email action'.";
+        const suggestions = [
+          "Deploy a Nexus agent for data processing",
+          "Create a Quest agent for mission coordination", 
+          "Add a Scout agent for intelligence analysis",
+          "Initialize an Orchestrator for system command"
+        ];
+        const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+        aiResponse = `I can help you deploy agents to the operational grid. Try: "${randomSuggestion}"`;
       }
 
       const aiMessage: Message = {
@@ -114,7 +143,7 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
 
       setMessages(prev => [...prev, aiMessage]);
       setIsLoading(false);
-    }, 1000);
+    }, 1200);
 
     setInput('');
   };
@@ -131,12 +160,12 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
       {/* Header */}
       <div className="p-4 border-b border-chat-border">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-primary/10 rounded-lg">
+          <div className="p-2 bg-primary/15 rounded-lg">
             <Sparkles size={16} className="text-primary" />
           </div>
           <div>
-            <h2 className="font-medium text-sm text-foreground">AI Assistant</h2>
-            <p className="text-xs text-muted-foreground">Build workflows with natural language</p>
+            <h2 className="font-medium text-sm text-foreground">Strategic Command</h2>
+            <p className="text-xs text-muted-foreground">Multi-agent deployment interface</p>
           </div>
         </div>
       </div>
@@ -207,7 +236,7 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Add a trigger node, create an email action..."
+            placeholder="Deploy Nexus agent, initialize Scout intelligence..."
             className="flex-1 bg-background border-border"
             disabled={isLoading}
           />

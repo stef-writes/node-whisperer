@@ -62,11 +62,17 @@ export default {
 					user: 'hsl(var(--message-user))',
 					ai: 'hsl(var(--message-ai))'
 				},
-				node: {
-					trigger: 'hsl(var(--node-trigger))',
-					action: 'hsl(var(--node-action))',
-					condition: 'hsl(var(--node-condition))',
-					output: 'hsl(var(--node-output))'
+				agent: {
+					nexus: 'hsl(var(--agent-nexus))',
+					quest: 'hsl(var(--agent-quest))',
+					scout: 'hsl(var(--agent-scout))',
+					orchestrator: 'hsl(var(--agent-orchestrator))'
+				},
+				status: {
+					active: 'hsl(var(--status-active))',
+					processing: 'hsl(var(--status-processing))',
+					idle: 'hsl(var(--status-idle))',
+					error: 'hsl(var(--status-error))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

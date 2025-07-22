@@ -6,59 +6,59 @@
 
 @layer base {
   :root {
-    /* Canvas & Background */
-    --background: 250 20% 99%;
-    --foreground: 224 15% 15%;
-    --canvas: 240 15% 97%;
+    /* Canvas & Background - Darker theme like reference */
+    --background: 225 15% 8%;
+    --foreground: 220 15% 92%;
+    --canvas: 225 10% 6%;
     
     /* UI Elements */
-    --card: 0 0% 100%;
-    --card-foreground: 224 15% 15%;
+    --card: 225 15% 12%;
+    --card-foreground: 220 15% 92%;
     
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 15% 15%;
+    --popover: 225 15% 12%;
+    --popover-foreground: 220 15% 92%;
     
-    /* Brand Colors */
+    /* Agent Type Colors - Based on reference image */
     --primary: 260 85% 65%;
     --primary-foreground: 0 0% 98%;
     --primary-glow: 260 85% 75%;
     
-    /* Neutral Palette */
-    --secondary: 220 15% 95%;
-    --secondary-foreground: 224 15% 15%;
+    /* Agent-specific colors */
+    --agent-nexus: 260 85% 65%;        /* Purple - Data receiver */
+    --agent-quest: 45 90% 60%;         /* Orange/Gold - Data assembler */
+    --agent-scout: 200 85% 60%;        /* Blue - Intelligence gatherer */
+    --agent-orchestrator: 220 15% 65%; /* Gray - Command center */
     
-    --muted: 220 15% 96%;
-    --muted-foreground: 224 10% 45%;
+    /* Status colors */
+    --status-active: 142 75% 55%;      /* Green */
+    --status-processing: 45 90% 60%;   /* Orange */
+    --status-idle: 220 15% 45%;        /* Gray */
+    --status-error: 0 75% 60%;         /* Red */
+    
+    /* Neutral Palette */
+    --secondary: 225 15% 18%;
+    --secondary-foreground: 220 15% 92%;
+    
+    --muted: 225 15% 15%;
+    --muted-foreground: 220 10% 65%;
     
     --accent: 260 85% 65%;
     --accent-foreground: 0 0% 98%;
     
-    /* Status Colors */
-    --success: 142 75% 45%;
-    --warning: 45 90% 60%;
-    --destructive: 0 75% 60%;
-    --destructive-foreground: 0 0% 98%;
-    
     /* Interface */
-    --border: 220 15% 90%;
-    --input: 220 15% 95%;
+    --border: 225 15% 20%;
+    --input: 225 15% 18%;
     --ring: 260 85% 65%;
     
     /* Chat Interface */
-    --chat-background: 0 0% 100%;
-    --chat-border: 220 15% 92%;
+    --chat-background: 225 15% 10%;
+    --chat-border: 225 15% 22%;
     --message-user: 260 85% 65%;
-    --message-ai: 220 15% 96%;
-    
-    /* Node Colors */
-    --node-trigger: 142 75% 45%;
-    --node-action: 217 90% 60%;
-    --node-condition: 45 90% 60%;
-    --node-output: 260 85% 65%;
+    --message-ai: 225 15% 18%;
     
     /* Effects */
-    --shadow-soft: 220 15% 85%;
-    --shadow-medium: 220 15% 75%;
+    --shadow-soft: 225 50% 5%;
+    --shadow-medium: 225 50% 3%;
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-canvas: linear-gradient(180deg, hsl(var(--canvas)), hsl(var(--background)));
     
@@ -158,33 +158,59 @@
   }
 }
 
-/* Workflow Canvas Styles */
-.workflow-canvas .react-flow__controls {
-  @apply bg-card border border-border rounded-lg shadow-sm;
+/* Agent Canvas Styles - Dark theme matching reference */
+.agent-canvas {
+  @apply bg-canvas;
 }
 
-.workflow-canvas .react-flow__controls button {
-  @apply bg-transparent border-none text-foreground hover:bg-muted;
+.agent-canvas .react-flow__controls {
+  @apply bg-card/90 backdrop-blur-sm border border-border rounded-xl shadow-lg;
 }
 
-.workflow-canvas .react-flow__minimap {
-  @apply bg-card border border-border rounded-lg shadow-sm;
+.agent-canvas .react-flow__controls button {
+  @apply bg-transparent border-none text-foreground hover:bg-muted/50 transition-colors;
 }
 
-.workflow-node {
-  @apply transition-all duration-200 hover:shadow-md;
+.agent-canvas .react-flow__controls button:hover {
+  @apply text-primary;
 }
 
-.workflow-node:hover {
-  @apply scale-105;
+.agent-canvas .react-flow__minimap {
+  @apply bg-card/90 backdrop-blur-sm border border-border rounded-xl shadow-lg;
 }
 
-.handle-minimal {
+.agent-node {
+  @apply transition-all duration-300 hover:shadow-xl;
+}
+
+.agent-node:hover {
+  @apply scale-[1.02];
+}
+
+.handle-agent {
+  @apply transition-all duration-200 opacity-70 hover:opacity-100;
+}
+
+.handle-agent:hover {
+  @apply scale-125;
+}
+
+/* Enhanced edge styling */
+.react-flow__edge {
   @apply transition-all duration-200;
 }
 
-.handle-minimal:hover {
-  @apply scale-150;
+.react-flow__edge:hover {
+  @apply drop-shadow-lg;
+}
+
+.react-flow__edge-path {
+  @apply transition-all duration-200;
+}
+
+/* Status indicators */
+.status-indicator {
+  @apply animate-pulse;
 }
 
 /* Custom scrollbar for chat */
@@ -193,5 +219,5 @@
 }
 
 .scroll-area [data-radix-scroll-area-thumb] {
-  @apply bg-border rounded-full;
+  @apply bg-border hover:bg-border/80 rounded-full transition-colors;
 }
