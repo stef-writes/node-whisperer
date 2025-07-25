@@ -41,54 +41,74 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
     scrollToBottom();
   }, [messages]);
 
-  const parseAgentCommand = (text: string) => {
+  const parseChainCommand = (text: string) => {
     const lowerText = text.toLowerCase();
     
-    // Enhanced agent detection with realistic configurations
-    if (lowerText.includes('nexus') || lowerText.includes('data receiver')) {
+    // Chain detection for surplus inventory workflow
+    if (lowerText.includes('intake') || lowerText.includes('inventory') || lowerText.includes('csv')) {
       return {
-        agentType: 'nexus',
-        role: 'Data Stream Processor',
-        description: 'Handles incoming data validation and preliminary processing',
+        chainType: 'intake',
+        title: 'Inventory Intake',
+        description: 'Ingests and validates surplus inventory from CSV uploads with deduplication',
+        status: 'active',
+        metrics: { processed: Math.floor(Math.random() * 1000), queue: Math.floor(Math.random() * 10), uptime: `${Math.floor(Math.random() * 5)}h ${Math.floor(Math.random() * 60)}m` },
+        subNodes: [
+          { id: 'read_csv', name: 'read_inventory_csv', type: 'Tool', description: 'Ingests uploaded CSV of surplus products' },
+          { id: 'dedupe', name: 'dedupe_items', type: 'Logic', description: 'Removes duplicate or already-sold SKUs' },
+          { id: 'log_import', name: 'log_import', type: 'System', description: 'Adds audit entry to data log + dashboard' }
+        ]
+      };
+    } else if (lowerText.includes('enrichment') || lowerText.includes('product') || lowerText.includes('optimize')) {
+      return {
+        chainType: 'enrichment',
+        title: 'Product Enrichment',
+        description: 'AI-powered product optimization with titles, images, pricing, and taxonomy mapping',
         status: 'processing',
-        metrics: { processed: Math.floor(Math.random() * 1000), queue: Math.floor(Math.random() * 20), uptime: '1h 23m' }
+        metrics: { processed: Math.floor(Math.random() * 800), queue: Math.floor(Math.random() * 15), uptime: `${Math.floor(Math.random() * 3)}h ${Math.floor(Math.random() * 60)}m` },
+        subNodes: [
+          { id: 'gen_title', name: 'generate_title_description', type: 'LLM', description: 'Generates optimized titles + SEO-rich blurbs' },
+          { id: 'find_img', name: 'find_image', type: 'Tool', description: 'Looks up product image or selects from upload folder' },
+          { id: 'price_suggest', name: 'price_suggestion', type: 'LLM', description: 'Checks historical pricing data and suggests floor/ceiling range' }
+        ]
       };
-    } else if (lowerText.includes('quest') || lowerText.includes('assembler') || lowerText.includes('assembly')) {
+    } else if (lowerText.includes('generator') || lowerText.includes('listing') || lowerText.includes('platform')) {
       return {
-        agentType: 'quest',
-        role: 'Mission Coordinator',
-        description: 'Orchestrates complex multi-step data assembly operations',
+        chainType: 'generator',
+        title: 'Listing Generator',
+        description: 'Creates platform-specific listings for Facebook, eBay, and Amazon marketplaces',
         status: 'active',
-        metrics: { processed: Math.floor(Math.random() * 800), queue: Math.floor(Math.random() * 15), uptime: '2h 45m' }
+        metrics: { processed: Math.floor(Math.random() * 600), queue: Math.floor(Math.random() * 5), uptime: `${Math.floor(Math.random() * 2)}h ${Math.floor(Math.random() * 60)}m` },
+        subNodes: [
+          { id: 'platform_map', name: 'platform_mapper', type: 'Logic', description: 'Splits into platform-specific schema' },
+          { id: 'fb_listing', name: 'generate_facebook_listing', type: 'Tool', description: 'Fills Facebook Marketplace listing template' },
+          { id: 'ebay_listing', name: 'generate_ebay_listing', type: 'API', description: 'Prepares listing in eBay API format' }
+        ]
       };
-    } else if (lowerText.includes('scout') || lowerText.includes('intelligence') || lowerText.includes('analysis')) {
+    } else if (lowerText.includes('publisher') || lowerText.includes('publish') || lowerText.includes('upload')) {
       return {
-        agentType: 'scout',
-        role: 'Tactical Analyst',
-        description: 'Performs deep intelligence gathering and strategic assessment',
-        status: 'idle',
-        metrics: { processed: Math.floor(Math.random() * 600), queue: 0, uptime: '45m' }
-      };
-    } else if (lowerText.includes('orchestrator') || lowerText.includes('command') || lowerText.includes('coordinate')) {
-      return {
-        agentType: 'orchestrator',
-        role: 'System Commander',
-        description: 'Manages overall system strategy and agent coordination',
+        chainType: 'publisher',
+        title: 'Platform Publisher',
+        description: 'Publishes listings across multiple platforms with tracking and alerts',
         status: 'active',
-        metrics: { processed: Math.floor(Math.random() * 2000), queue: Math.floor(Math.random() * 5), uptime: '5h 12m' }
+        metrics: { processed: Math.floor(Math.random() * 400), queue: Math.floor(Math.random() * 8), uptime: `${Math.floor(Math.random() * 4)}h ${Math.floor(Math.random() * 60)}m` },
+        subNodes: [
+          { id: 'fb_publish', name: 'facebook_publish', type: 'API', description: 'Posts listing via Facebook Graph API' },
+          { id: 'ebay_publish', name: 'ebay_publish', type: 'API', description: 'Uses eBay Sell API' },
+          { id: 'amazon_publish', name: 'amazon_publish', type: 'API', description: 'Posts to Amazon seller account' }
+        ]
       };
-    }
-    
-    // Auto-suggest based on keywords
-    if (lowerText.includes('agent') || lowerText.includes('add') || lowerText.includes('create')) {
-      const agentTypes = ['nexus', 'quest', 'scout', 'orchestrator'];
-      const randomType = agentTypes[Math.floor(Math.random() * agentTypes.length)];
+    } else if (lowerText.includes('router') || lowerText.includes('inquiry') || lowerText.includes('customer')) {
       return {
-        agentType: randomType,
-        role: `Auto-generated ${randomType}`,
-        description: `Automatically created ${randomType} agent based on your request`,
-        status: 'idle',
-        metrics: { processed: 0, queue: 0, uptime: '0m' }
+        chainType: 'router',
+        title: 'Inquiry Router',
+        description: 'Handles customer inquiries with AI classification and auto-responses',
+        status: 'processing',
+        metrics: { processed: Math.floor(Math.random() * 300), queue: Math.floor(Math.random() * 12), uptime: `${Math.floor(Math.random() * 2)}h ${Math.floor(Math.random() * 60)}m` },
+        subNodes: [
+          { id: 'monitor_inbox', name: 'monitor_inbox', type: 'API', description: 'Pulls buyer inquiries across platforms' },
+          { id: 'intent_classify', name: 'intent_classifier', type: 'LLM', description: 'Classifies inquiry type and intent' },
+          { id: 'reply_gen', name: 'reply_generator', type: 'LLM', description: 'Generates contextual responses' }
+        ]
       };
     }
     
@@ -108,30 +128,30 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    // Check if the message is requesting an agent
-    const agentData = parseAgentCommand(input);
+    // Check if the message is requesting a chain
+    const chainData = parseChainCommand(input);
     
-    // Simulate AI response with agent context
+    // Simulate AI response with chain context
     setTimeout(() => {
       let aiResponse = "";
       
-      if (agentData) {
-        aiResponse = `Agent deployment initiated. ${agentData.agentType.toUpperCase()} agent "${agentData.role}" has been instantiated with ${agentData.status} status. Current metrics: ${agentData.metrics?.processed || 0} items processed.`;
-        onNodeRequest?.(agentData);
+      if (chainData) {
+        aiResponse = `Workflow chain deployed. ${chainData.title} has been instantiated with ${chainData.status} status. Processing pipeline: ${chainData.subNodes.length} sub-nodes active. Current metrics: ${chainData.metrics?.processed || 0} items processed.`;
+        onNodeRequest?.(chainData);
         
-        // Add agent to canvas using the global function
-        if ((window as any).addAgent) {
-          (window as any).addAgent(agentData);
+        // Add chain to canvas using the global function
+        if ((window as any).addChain) {
+          (window as any).addChain(chainData);
         }
       } else {
         const suggestions = [
-          "Deploy a Nexus agent for data processing",
-          "Create a Quest agent for mission coordination", 
-          "Add a Scout agent for intelligence analysis",
-          "Initialize an Orchestrator for system command"
+          "Deploy intake chain for inventory processing",
+          "Create enrichment chain for product optimization", 
+          "Add publisher chain for multi-platform listing",
+          "Initialize router chain for customer inquiries"
         ];
         const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
-        aiResponse = `I can help you deploy agents to the operational grid. Try: "${randomSuggestion}"`;
+        aiResponse = `I can help you deploy workflow chains for surplus inventory management. Try: "${randomSuggestion}"`;
       }
 
       const aiMessage: Message = {
@@ -164,8 +184,8 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
             <Sparkles size={16} className="text-primary" />
           </div>
           <div>
-            <h2 className="font-medium text-sm text-foreground">Strategic Command</h2>
-            <p className="text-xs text-muted-foreground">Multi-agent deployment interface</p>
+            <h2 className="font-medium text-sm text-foreground">Workflow Command</h2>
+            <p className="text-xs text-muted-foreground">Multi-chain deployment interface</p>
           </div>
         </div>
       </div>

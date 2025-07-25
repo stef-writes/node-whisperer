@@ -23,11 +23,14 @@
     --primary-foreground: 0 0% 98%;
     --primary-glow: 260 85% 75%;
     
-    /* Agent-specific colors */
-    --agent-nexus: 260 85% 65%;        /* Purple - Data receiver */
-    --agent-quest: 45 90% 60%;         /* Orange/Gold - Data assembler */
-    --agent-scout: 200 85% 60%;        /* Blue - Intelligence gatherer */
-    --agent-orchestrator: 220 15% 65%; /* Gray - Command center */
+    /* Chain-specific colors */
+    --chain-intake: 214 95% 60%;        /* Blue - Inventory intake */
+    --chain-enrichment: 260 85% 65%;    /* Purple - Product enrichment */
+    --chain-generator: 142 75% 55%;     /* Green - Listing generator */
+    --chain-publisher: 24 90% 60%;      /* Orange - Platform publisher */
+    --chain-router: 189 85% 60%;        /* Cyan - Inquiry router */
+    --chain-tracker: 329 85% 60%;       /* Pink - Order tracker */
+    --chain-feedback: 234 85% 60%;      /* Indigo - Feedback & sync */
     
     /* Status colors */
     --status-active: 142 75% 55%;      /* Green */
