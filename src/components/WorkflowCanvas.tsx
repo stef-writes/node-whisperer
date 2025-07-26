@@ -16,6 +16,8 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import ChainNode from './ChainNode';
+import SystemStatus from './SystemStatus';
+import { CanvasSelector } from './CanvasSelector';
 
 const nodeTypes: NodeTypes = {
   chain: ChainNode,
@@ -211,13 +213,12 @@ const initialEdges: Edge[] = [
   },
 ];
 
-import SystemStatus from './SystemStatus';
-
 interface WorkflowCanvasProps {
   onNodeAdd?: (node: Node) => void;
+  onSelectionCreate?: (selection: any) => void;
 }
 
-export default function WorkflowCanvas({ onNodeAdd }: WorkflowCanvasProps) {
+export default function WorkflowCanvas({ onNodeAdd, onSelectionCreate }: WorkflowCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -261,6 +262,10 @@ export default function WorkflowCanvas({ onNodeAdd }: WorkflowCanvasProps) {
   return (
     <div ref={canvasRef} className="w-full h-full bg-canvas relative">
       <SystemStatus metrics={systemMetrics} />
+      <CanvasSelector 
+        onSelectionCreate={onSelectionCreate || (() => {})} 
+        canvasRef={canvasRef} 
+      />
       <ReactFlow
         nodes={nodes}
         edges={edges}

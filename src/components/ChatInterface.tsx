@@ -1,15 +1,42 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Plus } from 'lucide-react';
+import { Send, Bot, User, Plus, Play, Code, FileText, Zap, AlertCircle, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+
+interface Artifact {
+  id: string;
+  type: 'code' | 'config' | 'diagram' | 'spec';
+  language?: string;
+  title: string;
+  content: string;
+  action: string;
+}
+
+interface ScopeObject {
+  id: string;
+  type: 'selection' | 'region' | 'tag';
+  targets: {
+    nodes?: string[];
+    chains?: string[];
+  };
+  bbox?: string;
+  labels?: string[];
+  notes?: string;
+  metrics?: any;
+  contextText?: string;
+}
 
 interface Message {
   id: string;
   content: string;
   sender: 'user' | 'ai';
   timestamp: Date;
-  actions?: Array<{
+  intent?: 'brainstorm' | 'blueprint' | 'build' | 'debug';
+  scope?: ScopeObject;
+  artifacts?: Artifact[];
+  suggestions?: Array<{
     label: string;
     action: () => void;
     variant?: 'default' | 'outline';
@@ -18,9 +45,10 @@ interface Message {
 
 interface ChatInterfaceProps {
   onNodeRequest?: (nodeData: any) => void;
+  currentScope?: any;
 }
 
-export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
+export default function ChatInterface({ onNodeRequest, currentScope }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -33,7 +61,21 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
       content: 'Here is your blueprint. Would you like to dive into building the first chain, Inventory Intake?',
       sender: 'ai',
       timestamp: new Date(Date.now() - 120000),
-      actions: [
+      intent: 'blueprint',
+      artifacts: [
+        {
+          id: 'intake-spec',
+          type: 'spec',
+          title: 'Inventory Intake Chain',
+          content: `Chain: Inventory Intake
+Nodes: 3 sub-components
+- read_inventory_csv (Tool)
+- dedupe_items (Logic) 
+- log_import (System)`,
+          action: 'ADD_TO_CANVAS'
+        }
+      ],
+      suggestions: [
         {
           label: 'Add to Canvas',
           action: () => handleAddToCanvas('intake'),
@@ -46,7 +88,8 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
       content: 'Do we have all of the tools we need for the Inventory Intake, or do we need to make some?',
       sender: 'ai',
       timestamp: new Date(Date.now() - 60000),
-      actions: [
+      intent: 'debug',
+      suggestions: [
         {
           label: 'Restore Checkpoint',
           action: () => console.log('Restore checkpoint'),
@@ -75,7 +118,7 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
         content: `Great! I've added the ${chainData.title} chain to your canvas. Would you like to configure its sub-nodes or move on to the next chain?`,
         sender: 'ai',
         timestamp: new Date(),
-        actions: [
+        suggestions: [
           {
             label: 'Configure Sub-nodes',
             action: () => console.log('Configure sub-nodes'),
@@ -242,6 +285,26 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
     }
   };
 
+  const getIntentColor = (intent?: string) => {
+    switch (intent) {
+      case 'brainstorm': return 'border-green-500';
+      case 'blueprint': return 'border-cyan-500';
+      case 'build': return 'border-orange-500';
+      case 'debug': return 'border-purple-500';
+      default: return 'border-border';
+    }
+  };
+
+  const getIntentIcon = (intent?: string) => {
+    switch (intent) {
+      case 'brainstorm': return <Target size={12} className="text-green-500" />;
+      case 'blueprint': return <FileText size={12} className="text-cyan-500" />;
+      case 'build': return <Code size={12} className="text-orange-500" />;
+      case 'debug': return <AlertCircle size={12} className="text-purple-500" />;
+      default: return null;
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-chat-background border-l border-chat-border">
       {/* Header */}
@@ -288,26 +351,68 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
               <div className={`max-w-[85%] ${
                 message.sender === 'user' ? 'text-right' : ''
               }`}>
-                <div className={`inline-block p-3 rounded-xl text-sm leading-relaxed ${
+                <div className={`inline-block p-3 rounded-xl text-sm leading-relaxed border-2 ${
                   message.sender === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-message-ai text-foreground border border-border'
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : `bg-message-ai text-foreground ${getIntentColor(message.intent)}`
                 }`}>
+                  {message.sender === 'ai' && message.intent && (
+                    <div className="flex items-center gap-1 mb-2 text-xs opacity-80">
+                      {getIntentIcon(message.intent)}
+                      <span className="capitalize">{message.intent}</span>
+                    </div>
+                  )}
                   {message.content}
                 </div>
                 
-                {message.actions && (
+                {message.suggestions && (
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {message.actions.map((action, index) => (
+                    {message.suggestions.map((suggestion, index) => (
                       <Button
                         key={index}
-                        variant={action.variant || 'outline'}
+                        variant={suggestion.variant || 'outline'}
                         size="sm"
-                        onClick={action.action}
+                        onClick={suggestion.action}
                         className="text-xs h-7 hover-scale"
                       >
-                        {action.label}
+                        {suggestion.label}
                       </Button>
+                    ))}
+                  </div>
+                )}
+
+                {message.artifacts && (
+                  <div className="space-y-2 mt-3">
+                    {message.artifacts.map((artifact) => (
+                      <div key={artifact.id} className="bg-card border border-border rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            {artifact.type === 'code' && <Code size={14} className="text-muted-foreground" />}
+                            {artifact.type === 'spec' && <FileText size={14} className="text-muted-foreground" />}
+                            {artifact.type === 'config' && <Zap size={14} className="text-muted-foreground" />}
+                            <span className="text-xs font-medium text-foreground">{artifact.title}</span>
+                            <Badge variant="outline" className="text-xs">
+                              {artifact.type}
+                            </Badge>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="default"
+                            className="text-xs h-6 px-2"
+                            onClick={() => {
+                              if (artifact.action === 'ADD_TO_CANVAS') {
+                                handleAddToCanvas('intake');
+                              }
+                            }}
+                          >
+                            <Play size={12} className="mr-1" />
+                            Apply
+                          </Button>
+                        </div>
+                        <pre className="text-xs bg-muted p-2 rounded text-muted-foreground font-mono overflow-x-auto">
+                          {artifact.content}
+                        </pre>
+                      </div>
                     ))}
                   </div>
                 )}
