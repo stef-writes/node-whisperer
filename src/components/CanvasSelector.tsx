@@ -162,7 +162,7 @@ export function CanvasSelector({ onSelectionCreate, canvasRef }: CanvasSelectorP
       <div
         className="absolute inset-0 z-10"
         style={{ 
-          pointerEvents: 'all',
+          pointerEvents: isShiftPressed ? 'all' : 'none',
           cursor: isSelecting ? 'crosshair' : 'default'
         }}
         onMouseDown={handleMouseDown}
