@@ -33,10 +33,20 @@ export function CanvasSelector({ onSelectionCreate, canvasRef }: CanvasSelectorP
   const [isShiftPressed, setIsShiftPressed] = useState(false);
   const selectionRef = useRef<HTMLDivElement>(null);
 
-  // Listen for shift key
+  // Listen for keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Shift') setIsShiftPressed(true);
+      if (e.key === 'Escape') {
+        setActiveSelections([]);
+        setContextMenu(null);
+        setIsSelecting(false);
+        setCurrentSelection(null);
+      }
+      // Space + drag for panning (prevents space from interfering)
+      if (e.code === 'Space' && !e.repeat) {
+        e.preventDefault();
+      }
     };
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Shift') setIsShiftPressed(false);

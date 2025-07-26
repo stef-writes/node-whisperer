@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Plus, Play, Code, FileText, Zap, AlertCircle, Target } from 'lucide-react';
+import { Send, Bot, User, Plus, Play, Code, FileText, Zap, AlertCircle, Target, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 interface Artifact {
   id: string;
@@ -49,6 +50,7 @@ interface ChatInterfaceProps {
 }
 
 export default function ChatInterface({ onNodeRequest, currentScope }: ChatInterfaceProps) {
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -444,6 +446,17 @@ Suggested fix: Add retry logic + cache`,
                             onClick={() => {
                               if (artifact.action === 'ADD_TO_CANVAS') {
                                 handleAddToCanvas('intake');
+                                toast({
+                                  title: "Applied to Canvas",
+                                  description: `${artifact.title} has been added successfully`,
+                                  duration: 2000,
+                                });
+                              } else if (artifact.action === 'APPLY_FIX') {
+                                toast({
+                                  title: "Fix Applied",
+                                  description: "Error resolution has been implemented",
+                                  duration: 2000,
+                                });
                               }
                             }}
                           >
