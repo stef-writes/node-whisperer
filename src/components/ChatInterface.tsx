@@ -395,8 +395,8 @@ Suggested fix: Add retry logic + cache`,
               }`}>
                 <div className={`inline-block p-3 rounded-xl text-sm leading-relaxed border-2 ${
                   message.sender === 'user'
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : `bg-message-ai text-foreground ${getIntentColor(message.intent)}`
+                    ? 'bg-primary text-primary-foreground border-purple-500'
+                    : `bg-message-ai text-foreground border-green-500 ${getIntentColor(message.intent)}`
                 }`}>
                   {message.sender === 'ai' && message.intent && (
                     <div className="flex items-center gap-1 mb-2 text-xs opacity-80">

@@ -109,11 +109,15 @@ export function CanvasSelector({ onSelectionCreate, canvasRef }: CanvasSelectorP
     <>
       {/* Selection overlay */}
       <div
-        className="absolute inset-0 pointer-events-none z-10"
-        style={{ pointerEvents: isSelecting ? 'all' : 'none' }}
+        className="absolute inset-0 z-10"
+        style={{ 
+          pointerEvents: 'all',
+          cursor: isSelecting ? 'crosshair' : 'default'
+        }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
       >
         {/* Current selection being drawn */}
         {currentSelection && (
