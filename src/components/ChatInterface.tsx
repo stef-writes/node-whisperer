@@ -52,49 +52,91 @@ export default function ChatInterface({ onNodeRequest, currentScope }: ChatInter
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'Help me blueprint an Agentic AI Automation that sells our surplus inventory on facebook marketplace',
+      content: 'Help me think through the surplus inventory workflow - what are the key decision points?',
       sender: 'user',
-      timestamp: new Date(Date.now() - 180000),
+      timestamp: new Date(Date.now() - 240000),
     },
     {
       id: '2',
-      content: 'Here is your blueprint. Would you like to dive into building the first chain, Inventory Intake?',
+      content: 'Let me sketch the decision flow: Inventory arrives → Quality check → Pricing strategy → Platform selection → Listing optimization. Key decisions: Which platforms for each item type? How to handle bulk vs individual items?',
       sender: 'ai',
-      timestamp: new Date(Date.now() - 120000),
-      intent: 'blueprint',
+      timestamp: new Date(Date.now() - 220000),
+      intent: 'brainstorm',
       artifacts: [
         {
-          id: 'intake-spec',
-          type: 'spec',
-          title: 'Inventory Intake Chain',
-          content: `Chain: Inventory Intake
-Nodes: 3 sub-components
-- read_inventory_csv (Tool)
-- dedupe_items (Logic) 
-- log_import (System)`,
+          id: 'decision-flow',
+          type: 'diagram',
+          title: 'Surplus Inventory Decision Flow',
+          content: `graph TD
+    A[Inventory Arrives] --> B{Quality Check}
+    B -->|Good| C[Pricing Strategy]
+    B -->|Poor| D[Liquidation Path]
+    C --> E{Item Type?}
+    E -->|Electronics| F[eBay + Amazon]
+    E -->|Furniture| G[Facebook Marketplace]`,
           action: 'ADD_TO_CANVAS'
-        }
-      ],
-      suggestions: [
-        {
-          label: 'Add to Canvas',
-          action: () => handleAddToCanvas('intake'),
-          variant: 'default'
         }
       ]
     },
     {
       id: '3',
-      content: 'Do we have all of the tools we need for the Inventory Intake, or do we need to make some?',
+      content: 'Refine this into specific chains and identify what tools we need for the CSV reader component.',
+      sender: 'user',
+      timestamp: new Date(Date.now() - 180000),
+    },
+    {
+      id: '4',
+      content: 'Here\'s the structured spec with missing components identified:',
       sender: 'ai',
-      timestamp: new Date(Date.now() - 60000),
-      intent: 'debug',
-      suggestions: [
+      timestamp: new Date(Date.now() - 160000),
+      intent: 'blueprint',
+      artifacts: [
         {
-          label: 'Restore Checkpoint',
-          action: () => console.log('Restore checkpoint'),
-          variant: 'outline'
+          id: 'csv-reader-spec',
+          type: 'spec',
+          title: 'CSV Reader Tool Specification',
+          content: `Tool: read_inventory_csv
+Required inputs: file_path, validation_schema
+Missing dependencies:
+- pandas library (install)
+- schema validator (create)
+- error logging system (configure)`,
+          action: 'CREATE_MISSING_TOOLS'
         }
+      ],
+      suggestions: [
+        { label: 'Create Missing Tools', action: () => console.log('Creating tools'), variant: 'default' },
+        { label: 'Add to Canvas', action: () => handleAddToCanvas('intake'), variant: 'outline' }
+      ]
+    },
+    {
+      id: '5',
+      content: 'Why is the enrichment chain failing? Show me the error trace.',
+      sender: 'user',
+      timestamp: new Date(Date.now() - 120000),
+    },
+    {
+      id: '6',
+      content: 'Error analysis shows pricing API timeout. Cost impact: $127 in failed requests over 2h.',
+      sender: 'ai',
+      timestamp: new Date(Date.now() - 100000),
+      intent: 'debug',
+      artifacts: [
+        {
+          id: 'error-trace',
+          type: 'code',
+          language: 'python',
+          title: 'Error Trace Analysis',
+          content: `ERROR: PricingAPI timeout after 30s
+Failed requests: 45/67 (67%)
+Cost impact: $127 USD
+Suggested fix: Add retry logic + cache`,
+          action: 'APPLY_FIX'
+        }
+      ],
+      suggestions: [
+        { label: 'Apply Fix', action: () => console.log('Applying fix'), variant: 'default' },
+        { label: 'Open SubDAG', action: () => console.log('Opening SubDAG'), variant: 'outline' }
       ]
     },
   ]);
