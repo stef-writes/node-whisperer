@@ -1,7 +1,7 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Target, MessageCircle, Code, AlertTriangle, Tag } from 'lucide-react';
+import { Target, MessageCircle, Code, AlertTriangle, Tag, FileText, Brain, StickyNote, Zap } from 'lucide-react';
 
 interface SelectionArea {
   id: string;
@@ -11,6 +11,12 @@ interface SelectionArea {
   height: number;
   nodes: string[];
   label?: string;
+}
+
+interface ContextMenu {
+  x: number;
+  y: number;
+  selection: SelectionArea;
 }
 
 interface CanvasSelectorProps {
@@ -23,10 +29,32 @@ export function CanvasSelector({ onSelectionCreate, canvasRef }: CanvasSelectorP
   const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null);
   const [currentSelection, setCurrentSelection] = useState<SelectionArea | null>(null);
   const [activeSelections, setActiveSelections] = useState<SelectionArea[]>([]);
+  const [contextMenu, setContextMenu] = useState<ContextMenu | null>(null);
+  const [isShiftPressed, setIsShiftPressed] = useState(false);
   const selectionRef = useRef<HTMLDivElement>(null);
 
+  // Listen for shift key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') setIsShiftPressed(true);
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') setIsShiftPressed(false);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !isShiftPressed) return;
+    
+    e.stopPropagation(); // Prevent ReactFlow from handling this
+    setContextMenu(null); // Close any open context menu
     
     const rect = canvasRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -42,10 +70,10 @@ export function CanvasSelector({ onSelectionCreate, canvasRef }: CanvasSelectorP
       height: 0,
       nodes: []
     });
-  }, [canvasRef]);
+  }, [canvasRef, isShiftPressed]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isSelecting || !selectionStart || !canvasRef.current) return;
+    if (!isSelecting || !selectionStart || !canvasRef.current || !isShiftPressed) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
     const currentX = e.clientX - rect.left;
@@ -63,15 +91,22 @@ export function CanvasSelector({ onSelectionCreate, canvasRef }: CanvasSelectorP
       width,
       height
     } : null);
-  }, [isSelecting, selectionStart, canvasRef]);
+  }, [isSelecting, selectionStart, canvasRef, isShiftPressed]);
 
-  const handleMouseUp = useCallback(() => {
-    if (!currentSelection || currentSelection.width < 20 || currentSelection.height < 20) {
+  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+    if (!currentSelection || currentSelection.width < 20 || currentSelection.height < 20 || !isShiftPressed) {
       setIsSelecting(false);
       setSelectionStart(null);
       setCurrentSelection(null);
       return;
     }
+
+    // Show context menu
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      selection: currentSelection
+    });
 
     // Create scope object
     const scopeObject = {
@@ -93,16 +128,32 @@ export function CanvasSelector({ onSelectionCreate, canvasRef }: CanvasSelectorP
     setIsSelecting(false);
     setSelectionStart(null);
     setCurrentSelection(null);
-  }, [currentSelection, onSelectionCreate]);
+  }, [currentSelection, onSelectionCreate, isShiftPressed]);
 
-  const handleContextMenu = useCallback((selection: SelectionArea, e: React.MouseEvent) => {
-    e.preventDefault();
-    // Context menu actions would go here
-    console.log('Context menu for selection:', selection.id);
+  const handleContextAction = useCallback((action: string, selection: SelectionArea) => {
+    console.log(`${action} for selection:`, selection.id);
+    setContextMenu(null);
+    
+    // Add action logic here based on the action type
+    switch (action) {
+      case 'summarize':
+        // Trigger summarization
+        break;
+      case 'metadata':
+        // Generate metadata
+        break;
+      case 'notes':
+        // Add notes/comments
+        break;
+      case 'instruct':
+        // Instruct Frosty
+        break;
+    }
   }, []);
 
   const removeSelection = useCallback((selectionId: string) => {
     setActiveSelections(prev => prev.filter(s => s.id !== selectionId));
+    setContextMenu(null);
   }, []);
 
   return (
@@ -143,7 +194,6 @@ export function CanvasSelector({ onSelectionCreate, canvasRef }: CanvasSelectorP
               width: selection.width,
               height: selection.height,
             }}
-            onContextMenu={(e) => handleContextMenu(selection, e)}
           >
             {/* Selection controls */}
             <div className="absolute -top-8 left-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -163,6 +213,81 @@ export function CanvasSelector({ onSelectionCreate, canvasRef }: CanvasSelectorP
           </div>
         ))}
       </div>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <div
+          className="fixed z-50 bg-card border border-border rounded-lg shadow-lg p-2 min-w-48"
+          style={{
+            left: contextMenu.x,
+            top: contextMenu.y,
+          }}
+        >
+          <div className="text-xs text-muted-foreground mb-2 px-2">
+            Selection Actions
+          </div>
+          
+          <div className="space-y-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-xs h-8"
+              onClick={() => handleContextAction('summarize', contextMenu.selection)}
+            >
+              <FileText size={14} className="mr-2" />
+              Generate Summary
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-xs h-8"
+              onClick={() => handleContextAction('metadata', contextMenu.selection)}
+            >
+              <Brain size={14} className="mr-2" />
+              Generate Metadata
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-xs h-8"
+              onClick={() => handleContextAction('notes', contextMenu.selection)}
+            >
+              <StickyNote size={14} className="mr-2" />
+              Add Thoughts/Notes/Comment
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-xs h-8"
+              onClick={() => handleContextAction('instruct', contextMenu.selection)}
+            >
+              <Zap size={14} className="mr-2" />
+              Instruct Frosty
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Click outside to close context menu */}
+      {contextMenu && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setContextMenu(null)}
+        />
+      )}
+
+      {/* Shift hint */}
+      {isShiftPressed && (
+        <div className="absolute top-4 right-4 z-20 bg-card border border-border rounded-lg p-2 shadow-lg">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Target size={12} className="text-blue-500" />
+            <span>Selection Mode Active - Drag to select</span>
+          </div>
+        </div>
+      )}
 
       {/* Selection toolbar */}
       {activeSelections.length > 0 && (
