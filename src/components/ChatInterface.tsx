@@ -264,6 +264,35 @@ Suggested fix: Add retry logic + cache`,
           { id: 'reply_gen', name: 'reply_generator', type: 'LLM', description: 'Generates contextual responses' }
         ]
       };
+    } else if (lowerText.includes('tracker') || lowerText.includes('order') || lowerText.includes('fulfillment')) {
+      return {
+        chainType: 'tracker',
+        title: 'Order Tracker',
+        description: 'Manages order fulfillment from purchase to delivery with automated workflows',
+        status: 'idle',
+        metrics: { processed: Math.floor(Math.random() * 200), queue: Math.floor(Math.random() * 3), uptime: `${Math.floor(Math.random() * 6)}h ${Math.floor(Math.random() * 60)}m` },
+        subNodes: [
+          { id: 'order_webhook', name: 'order_received_webhook', type: 'Tool', description: 'Detects purchase / inquiry-to-sale' },
+          { id: 'fulfillment_path', name: 'choose_fulfillment_path', type: 'Logic', description: 'Internal or drop-shipping?' },
+          { id: 'notify_shipping', name: 'notify_shipping_team', type: 'Notify', description: 'Internal Slack + shipping label generator' },
+          { id: 'sync_status', name: 'sync_order_status', type: 'API', description: 'Updates platform with tracking info' },
+          { id: 'gen_invoice', name: 'generate_invoice', type: 'Finance Node', description: 'Optional: connects to Xero or Stripe' }
+        ]
+      };
+    } else if (lowerText.includes('feedback') || lowerText.includes('sync') || lowerText.includes('sold') || lowerText.includes('review')) {
+      return {
+        chainType: 'feedback',
+        title: 'Feedback & Sync',
+        description: 'Post-sale operations including inventory updates, fee tracking, and reviews',
+        status: 'active',
+        metrics: { processed: Math.floor(Math.random() * 150), queue: Math.floor(Math.random() * 2), uptime: `${Math.floor(Math.random() * 7)}h ${Math.floor(Math.random() * 60)}m` },
+        subNodes: [
+          { id: 'mark_sold', name: 'mark_inventory_sold', type: 'Tool', description: 'Updates stock levels in internal DB' },
+          { id: 'deactivate_listings', name: 'deactivate_other_listings', type: 'Logic', description: 'Removes item from other platforms once sold' },
+          { id: 'track_fees', name: 'track_fees', type: 'Finance Node', description: 'Captures transaction fees, tax for accounting' },
+          { id: 'review_flow', name: 'run_post_sale_review_flow', type: 'Tool', description: 'Requests reviews or automates post-sale sequence' }
+        ]
+      };
     }
     
     return null;
@@ -301,11 +330,14 @@ Suggested fix: Add retry logic + cache`,
         const suggestions = [
           "Deploy intake chain for inventory processing",
           "Create enrichment chain for product optimization", 
-          "Add publisher chain for multi-platform listing",
-          "Initialize router chain for customer inquiries"
+          "Add listing generator for multi-platform listings",
+          "Set up publisher chain for automated posting",
+          "Initialize inquiry router for customer support",
+          "Configure order tracker for fulfillment",
+          "Activate feedback sync for post-sale operations"
         ];
         const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
-        aiResponse = `I can help you deploy workflow chains for surplus inventory management. Try: "${randomSuggestion}"`;
+        aiResponse = `I can help you deploy workflow chains for the complete surplus inventory pipeline. Try: "${randomSuggestion}"`;
       }
 
       const aiMessage: Message = {
