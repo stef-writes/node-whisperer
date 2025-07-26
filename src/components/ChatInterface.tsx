@@ -523,13 +523,34 @@ Suggested fix: Add retry logic + cache`,
           </Button>
         </div>
         
+        {/* Scope Context Indicator */}
+        {currentScope && (
+          <div className="px-4 py-2 border-t border-chat-border bg-muted/30">
+            <div className="flex items-center gap-2 text-xs">
+              <Target size={12} className="text-purple-500" />
+              <span className="text-muted-foreground">Context:</span>
+              <Badge variant="outline" className="text-xs">
+                {currentScope.type} • {currentScope.contextText}
+              </Badge>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-4 w-4 p-0 ml-auto"
+                onClick={() => {/* Clear scope */}}
+              >
+                ×
+              </Button>
+            </div>
+          </div>
+        )}
+        
         {/* Input */}
         <div className="flex gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Plan, search, build anything"
+            placeholder={currentScope ? "Ask about selected region..." : "Plan, search, build anything"}
             className="flex-1 bg-background border-border text-sm"
             disabled={isLoading}
           />
