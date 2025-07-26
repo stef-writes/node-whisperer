@@ -127,8 +127,7 @@ function ChainNode({ data, selected }: NodeProps) {
           className={`chain-node bg-card border-2 rounded-xl p-4 shadow-lg min-w-[300px] max-w-[340px] transition-all duration-300 cursor-pointer hover:shadow-xl ${
             selected ? 'border-primary scale-105' : 'border-border'
           }`}
-          onMouseEnter={() => setIsPopoverOpen(true)}
-          onMouseLeave={() => setIsPopoverOpen(false)}
+          onClick={() => setIsPopoverOpen(!isPopoverOpen)}
         >
           <Handle
             type="target"
@@ -250,8 +249,6 @@ function ChainNode({ data, selected }: NodeProps) {
         className="w-96 p-0" 
         side="right" 
         align="center"
-        onMouseEnter={() => setIsPopoverOpen(true)}
-        onMouseLeave={() => setIsPopoverOpen(false)}
       >
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
