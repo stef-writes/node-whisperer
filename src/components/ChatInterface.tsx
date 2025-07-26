@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles } from 'lucide-react';
+import { Send, Bot, User, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -9,6 +9,11 @@ interface Message {
   content: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+  actions?: Array<{
+    label: string;
+    action: () => void;
+    variant?: 'default' | 'outline';
+  }>;
 }
 
 interface ChatInterfaceProps {
@@ -19,14 +24,76 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Strategic Intelligence Network initialized. I'm your AI command interface for multi-agent deployment and coordination. Deploy agents like 'Create a Nexus data processor' or 'Initialize Scout intelligence gathering'.",
+      content: 'Help me blueprint an Agentic AI Automation that sells our surplus inventory on facebook marketplace',
+      sender: 'user',
+      timestamp: new Date(Date.now() - 180000),
+    },
+    {
+      id: '2',
+      content: 'Here is your blueprint. Would you like to dive into building the first chain, Inventory Intake?',
       sender: 'ai',
-      timestamp: new Date(),
+      timestamp: new Date(Date.now() - 120000),
+      actions: [
+        {
+          label: 'Add to Canvas',
+          action: () => handleAddToCanvas('intake'),
+          variant: 'default'
+        }
+      ]
+    },
+    {
+      id: '3',
+      content: 'Do we have all of the tools we need for the Inventory Intake, or do we need to make some?',
+      sender: 'ai',
+      timestamp: new Date(Date.now() - 60000),
+      actions: [
+        {
+          label: 'Restore Checkpoint',
+          action: () => console.log('Restore checkpoint'),
+          variant: 'outline'
+        }
+      ]
     },
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const handleAddToCanvas = (chainType: string) => {
+    const chainData = parseChainCommand(chainType);
+    if (chainData) {
+      onNodeRequest?.(chainData);
+      
+      // Add chain to canvas using the global function
+      if ((window as any).addChain) {
+        (window as any).addChain(chainData);
+      }
+      
+      // Add a follow-up message
+      const followUpMessage: Message = {
+        id: (Date.now() + Math.random()).toString(),
+        content: `Great! I've added the ${chainData.title} chain to your canvas. Would you like to configure its sub-nodes or move on to the next chain?`,
+        sender: 'ai',
+        timestamp: new Date(),
+        actions: [
+          {
+            label: 'Configure Sub-nodes',
+            action: () => console.log('Configure sub-nodes'),
+            variant: 'outline'
+          },
+          {
+            label: 'Next Chain',
+            action: () => handleAddToCanvas('enrichment'),
+            variant: 'default'
+          }
+        ]
+      };
+      
+      setTimeout(() => {
+        setMessages(prev => [...prev, followUpMessage]);
+      }, 500);
+    }
+  };
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
@@ -179,13 +246,19 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
     <div className="flex flex-col h-full bg-chat-background border-l border-chat-border">
       {/* Header */}
       <div className="p-4 border-b border-chat-border">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-primary/15 rounded-lg">
-            <Sparkles size={16} className="text-primary" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-primary/15 rounded-lg">
+              <Bot size={16} className="text-primary" />
+            </div>
+            <div>
+              <h2 className="font-medium text-sm text-foreground">Sales Agent</h2>
+              <p className="text-xs text-muted-foreground">Plan, search, build anything</p>
+            </div>
           </div>
-          <div>
-            <h2 className="font-medium text-sm text-foreground">Workflow Command</h2>
-            <p className="text-xs text-muted-foreground">Multi-chain deployment interface</p>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Plus size={12} />
+            <span>Auto</span>
           </div>
         </div>
       </div>
@@ -212,17 +285,34 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
                 )}
               </div>
               
-              <div className={`max-w-[80%] ${
+              <div className={`max-w-[85%] ${
                 message.sender === 'user' ? 'text-right' : ''
               }`}>
-                <div className={`inline-block p-3 rounded-xl text-sm ${
+                <div className={`inline-block p-3 rounded-xl text-sm leading-relaxed ${
                   message.sender === 'user'
                     ? 'bg-primary text-primary-foreground'
-                    : 'bg-message-ai text-foreground'
+                    : 'bg-message-ai text-foreground border border-border'
                 }`}>
                   {message.content}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                
+                {message.actions && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {message.actions.map((action, index) => (
+                      <Button
+                        key={index}
+                        variant={action.variant || 'outline'}
+                        size="sm"
+                        onClick={action.action}
+                        className="text-xs h-7 hover-scale"
+                      >
+                        {action.label}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+                
+                <p className="text-xs text-muted-foreground mt-2">
                   {message.timestamp.toLocaleTimeString([], { 
                     hour: '2-digit', 
                     minute: '2-digit' 
@@ -249,15 +339,51 @@ export default function ChatInterface({ onNodeRequest }: ChatInterfaceProps) {
         </div>
       </ScrollArea>
 
-      {/* Input */}
+      {/* Quick Actions */}
       <div className="p-4 border-t border-chat-border">
+        <div className="flex flex-wrap gap-2 mb-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleAddToCanvas('intake')}
+            className="text-xs h-7 hover-scale"
+          >
+            Inventory Intake
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleAddToCanvas('enrichment')}
+            className="text-xs h-7 hover-scale"
+          >
+            Product Enrichment
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleAddToCanvas('publisher')}
+            className="text-xs h-7 hover-scale"
+          >
+            Platform Publisher
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setInput('Deploy complete workflow with all chains')}
+            className="text-xs h-7 hover-scale"
+          >
+            Complete Workflow
+          </Button>
+        </div>
+        
+        {/* Input */}
         <div className="flex gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Deploy Nexus agent, initialize Scout intelligence..."
-            className="flex-1 bg-background border-border"
+            placeholder="Plan, search, build anything"
+            className="flex-1 bg-background border-border text-sm"
             disabled={isLoading}
           />
           <Button
