@@ -1,93 +1,11 @@
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
-import { 
-  Database, 
-  Sparkles, 
-  FileText, 
-  Upload, 
-  MessageCircle, 
-  Package, 
-  BarChart3,
-  Activity,
-  Clock,
-  CheckCircle,
-  AlertCircle
-} from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-
-interface SubNode {
-  id: string;
-  name: string;
-  type: 'Tool' | 'Logic' | 'System' | 'LLM' | 'API' | 'HITL' | 'Notify' | 'UI' | 'Finance Node';
-  description: string;
-}
-
-interface ChainNodeData {
-  chainType: 'intake' | 'enrichment' | 'generator' | 'publisher' | 'router' | 'tracker' | 'feedback';
-  title: string;
-  description: string;
-  status: 'active' | 'processing' | 'idle' | 'error';
-  subNodes: SubNode[];
-  metrics?: {
-    processed?: number;
-    queue?: number;
-    uptime?: string;
-  };
-}
-
-const chainConfigs = {
-  intake: {
-    icon: Database,
-    label: 'Inventory Intake',
-    colorClass: 'chain-intake',
-    gradient: 'from-blue-500 to-blue-600',
-  },
-  enrichment: {
-    icon: Sparkles,
-    label: 'Product Enrichment',
-    colorClass: 'chain-enrichment',
-    gradient: 'from-purple-500 to-purple-600',
-  },
-  generator: {
-    icon: FileText,
-    label: 'Listing Generator',
-    colorClass: 'chain-generator',
-    gradient: 'from-green-500 to-green-600',
-  },
-  publisher: {
-    icon: Upload,
-    label: 'Platform Publisher',
-    colorClass: 'chain-publisher',
-    gradient: 'from-orange-500 to-orange-600',
-  },
-  router: {
-    icon: MessageCircle,
-    label: 'Inquiry Router',
-    colorClass: 'chain-router',
-    gradient: 'from-cyan-500 to-cyan-600',
-  },
-  tracker: {
-    icon: Package,
-    label: 'Order Tracker',
-    colorClass: 'chain-tracker',
-    gradient: 'from-pink-500 to-pink-600',
-  },
-  feedback: {
-    icon: BarChart3,
-    label: 'Feedback & Sync',
-    colorClass: 'chain-feedback',
-    gradient: 'from-indigo-500 to-indigo-600',
-  },
-};
-
-const statusConfigs = {
-  active: { icon: CheckCircle, color: 'status-active', label: 'Active' },
-  processing: { icon: Activity, color: 'status-processing', label: 'Processing' },
-  idle: { icon: Clock, color: 'status-idle', label: 'Idle' },
-  error: { icon: AlertCircle, color: 'status-error', label: 'Error' },
-};
+import { ChainNodeData, SubNode } from '@/types/workflow';
+import { getChainConfig } from '@/config/chainConfigs';
+import { getStatusConfig } from '@/config/statusConfigs';
 
 const getNodeTypeColor = (type: string) => {
   switch (type) {
@@ -109,8 +27,8 @@ function ChainNode({ data, selected }: NodeProps) {
   const { chainType, title, description, status, subNodes, metrics } = nodeData;
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   
-  const config = chainConfigs[chainType];
-  const statusConfig = statusConfigs[status];
+  const config = getChainConfig(chainType);
+  const statusConfig = getStatusConfig(status);
   const Icon = config.icon;
   const StatusIcon = statusConfig.icon;
 
