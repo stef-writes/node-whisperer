@@ -169,7 +169,7 @@ Suggested fix: Add retry logic + cache`,
             variant: 'outline'
           },
           {
-            label: 'Next Chain',
+            label: 'Add Chain',
             action: () => handleAddToCanvas('enrichment'),
             variant: 'default'
           }
@@ -441,21 +441,25 @@ Suggested fix: Add retry logic + cache`,
                   {message.content}
                 </div>
                 
-                {message.suggestions && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {message.suggestions.map((suggestion, index) => (
-                      <Button
-                        key={index}
-                        variant={suggestion.variant || 'outline'}
-                        size="sm"
-                        onClick={suggestion.action}
-                        className="text-xs h-7 hover-scale"
-                      >
-                        {suggestion.label}
-                      </Button>
-                    ))}
-                  </div>
-                )}
+                 {message.suggestions && (
+                   <div className="flex flex-wrap gap-2 mt-2">
+                     {message.suggestions.map((suggestion, index) => (
+                       <Button
+                         key={index}
+                         variant={suggestion.variant || 'outline'}
+                         size="sm"
+                         onClick={suggestion.action}
+                         className={`text-xs h-7 hover-scale ${
+                           suggestion.label === 'Add Chain' 
+                             ? 'bg-black text-white border-green-500 hover:bg-black/90' 
+                             : ''
+                         }`}
+                       >
+                         {suggestion.label}
+                       </Button>
+                     ))}
+                   </div>
+                 )}
 
                 {message.artifacts && (
                   <div className="space-y-2 mt-3">
