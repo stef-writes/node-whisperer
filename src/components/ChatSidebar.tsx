@@ -30,10 +30,8 @@ export function ChatSidebar({ onNodeRequest, currentScope }: ChatSidebarProps) {
             {open && <span className="font-medium text-sm">AI Assistant</span>}
           </div>
           {open && (
-            <SidebarTrigger asChild>
-              <button className="p-1 rounded hover:bg-muted">
-                <X size={14} />
-              </button>
+            <SidebarTrigger className="p-1 rounded hover:bg-muted">
+              <X size={14} />
             </SidebarTrigger>
           )}
         </div>
