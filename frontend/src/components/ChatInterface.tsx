@@ -9,6 +9,7 @@ import { ChatMessage, ChatArtifact, ChatSuggestion, ScopeObject } from '@/types/
 import { chatService } from '@/services/chatService';
 import MermaidDiagram from '@/components/MermaidDiagram';
 import { NodeBlock, NodeBlockGrid, NodeBlockData } from '@/components/NodeBlock';
+import { createSampleNodes } from '@/data/nodeExamples';
 
 interface ChatInterfaceProps {
   onNodeRequest?: (nodeData: any) => void;
