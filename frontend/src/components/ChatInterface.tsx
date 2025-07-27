@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { ChatMessage, ChatArtifact, ChatSuggestion, ScopeObject } from '@/types/workflow';
 import { chatService } from '@/services/chatService';
+import MermaidDiagram from '@/components/MermaidDiagram';
+import { NodeBlock, NodeBlockGrid, NodeBlockData } from '@/components/NodeBlock';
 
 interface ChatInterfaceProps {
   onNodeRequest?: (nodeData: any) => void;
