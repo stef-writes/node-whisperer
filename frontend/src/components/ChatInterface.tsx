@@ -207,101 +207,116 @@ export default function ChatInterface({ onNodeRequest, currentScope }: ChatInter
                           </div>
                         )}
 
-                        {/* Artifacts - Mermaid, Code Diffs, etc */}
+                        {/* Artifacts - Mermaid, Code Diffs, Node Blocks, etc */}
                         {message.artifacts && message.artifacts.length > 0 && (
                           <div className="mt-3 space-y-3">
                             {message.artifacts.map((artifact) => (
                               <div key={artifact.id}>
                                 {/* Mermaid Diagram */}
                                 {(artifact.type === 'diagram' || artifact.type === 'mermaid') && (
-                                  <div className="bg-card/50 border border-border rounded-lg overflow-hidden">
-                                    <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-card/80">
-                                      <div className="flex items-center gap-2">
-                                        <GitBranch size={12} className="text-muted-foreground" />
-                                        <span className="text-xs font-medium">{artifact.title}</span>
+                                  <MermaidDiagram
+                                    chart={artifact.content}
+                                    title={artifact.title}
+                                    metadata={artifact.metadata}
+                                    onAddToCanvas={() => {
+                                      handleAddToCanvas('workflow');
+                                      toast({
+                                        title: "Added to Canvas",
+                                        description: "Workflow blueprint deployed",
+                                        duration: 2000,
+                                      });
+                                    }}
+                                  />
+                                )}
+
+                                {/* Node Blocks for Code/Implementation */}
+                                {artifact.type === 'code' && (
+                                  <div className="space-y-3">
+                                    {/* Show the traditional code view */}
+                                    <div className="bg-card/50 border border-border rounded-lg overflow-hidden">
+                                      <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-card/80">
+                                        <div className="flex items-center gap-2">
+                                          <FileCode size={12} className="text-muted-foreground" />
+                                          <span className="text-xs font-medium">{artifact.title}</span>
+                                          <Badge variant="outline" className="text-xs h-4 px-1.5">
+                                            {artifact.language || 'code'}
+                                          </Badge>
+                                        </div>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="h-6 px-2 text-xs"
+                                          onClick={() => {
+                                            toast({
+                                              title: "Applied",
+                                              description: "Changes have been applied",
+                                              duration: 2000,
+                                            });
+                                          }}
+                                        >
+                                          <CheckCircle size={10} className="mr-1" />
+                                          Apply
+                                        </Button>
                                       </div>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-6 px-2 text-xs"
-                                        onClick={() => {
-                                          handleAddToCanvas('workflow');
+                                      <div className="font-mono text-xs max-h-40 overflow-auto">
+                                        {artifact.content.split('\n').map((line, i) => (
+                                          <div
+                                            key={i}
+                                            className={`px-3 py-0.5 ${
+                                              line.startsWith('+') ? 'bg-green-500/10 text-green-600' :
+                                              line.startsWith('-') ? 'bg-red-500/10 text-red-600' :
+                                              line.startsWith('@') ? 'bg-blue-500/10 text-blue-600' :
+                                              'text-muted-foreground'
+                                            }`}
+                                          >
+                                            {line}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+
+                                    {/* Show as Node Blocks */}
+                                    <div className="bg-card/30 border border-border rounded-lg p-3">
+                                      <div className="flex items-center gap-2 mb-3">
+                                        <Bot size={12} className="text-muted-foreground" />
+                                        <span className="text-xs font-medium text-foreground">Generated Node Components</span>
+                                      </div>
+                                      <NodeBlockGrid
+                                        nodes={convertArtifactToNodes(artifact)}
+                                        onDeploy={(node) => {
+                                          console.log('Deploying node:', node);
                                           toast({
-                                            title: "Added to Canvas",
-                                            description: "Workflow blueprint deployed",
+                                            title: "Node Deployed",
+                                            description: `${node.title} added to canvas`,
                                             duration: 2000,
                                           });
                                         }}
-                                      >
-                                        <Plus size={10} className="mr-1" />
-                                        Add to Canvas
-                                      </Button>
-                                    </div>
-                                    <div className="p-4 bg-muted/20">
-                                      <pre className="text-xs font-mono text-muted-foreground overflow-x-auto">
-                                        {artifact.content}
-                                      </pre>
-                                      {artifact.metadata && (
-                                        <div className="mt-3 pt-3 border-t border-border/50 text-xs text-muted-foreground">
-                                          <div className="grid grid-cols-2 gap-2">
-                                            <div>Chains: {artifact.metadata.chains}</div>
-                                            <div>Nodes: {artifact.metadata.nodes}</div>
-                                            <div>Tools: {artifact.metadata.tools}</div>
-                                            <div>LLM Nodes: {artifact.metadata.llmNodes}</div>
-                                          </div>
-                                        </div>
-                                      )}
+                                        onConfigure={(node) => {
+                                          console.log('Configuring node:', node);
+                                        }}
+                                        onViewDetails={(node) => {
+                                          console.log('Viewing node details:', node);
+                                        }}
+                                      />
                                     </div>
                                   </div>
                                 )}
 
-                                {/* Code/Diff Display */}
-                                {artifact.type === 'code' && (
-                                  <div className="bg-card/50 border border-border rounded-lg overflow-hidden">
-                                    <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-card/80">
-                                      <div className="flex items-center gap-2">
-                                        <FileCode size={12} className="text-muted-foreground" />
-                                        <span className="text-xs font-medium">{artifact.title}</span>
-                                        <Badge variant="outline" className="text-xs h-4 px-1.5">
-                                          {artifact.language || 'code'}
-                                        </Badge>
-                                      </div>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-6 px-2 text-xs"
-                                        onClick={() => {
-                                          toast({
-                                            title: "Applied",
-                                            description: "Changes have been applied",
-                                            duration: 2000,
-                                          });
-                                        }}
-                                      >
-                                        <CheckCircle size={10} className="mr-1" />
-                                        Apply
-                                      </Button>
+                                {/* Spec/Analysis artifacts as node blocks */}
+                                {(artifact.type === 'spec' || artifact.type === 'analysis') && (
+                                  <div className="bg-card/30 border border-border rounded-lg p-3">
+                                    <div className="flex items-center gap-2 mb-3">
+                                      <GitBranch size={12} className="text-muted-foreground" />
+                                      <span className="text-xs font-medium text-foreground">{artifact.title}</span>
                                     </div>
-                                    <div className="font-mono text-xs">
-                                      {artifact.content.split('\n').map((line, i) => (
-                                        <div
-                                          key={i}
-                                          className={`px-3 py-0.5 ${
-                                            line.startsWith('+') ? 'bg-green-500/10 text-green-600' :
-                                            line.startsWith('-') ? 'bg-red-500/10 text-red-600' :
-                                            line.startsWith('@') ? 'bg-blue-500/10 text-blue-600' :
-                                            'text-muted-foreground'
-                                          }`}
-                                        >
-                                          {line}
-                                        </div>
-                                      ))}
-                                    </div>
+                                    <pre className="text-xs font-mono text-muted-foreground overflow-x-auto bg-muted/20 p-2 rounded">
+                                      {artifact.content}
+                                    </pre>
                                   </div>
                                 )}
 
                                 {/* Other artifact types */}
-                                {artifact.type !== 'diagram' && artifact.type !== 'mermaid' && artifact.type !== 'code' && (
+                                {!['diagram', 'mermaid', 'code', 'spec', 'analysis'].includes(artifact.type) && (
                                   <div className="bg-card/50 border border-border rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-2">
                                       <FileText size={12} className="text-muted-foreground" />
