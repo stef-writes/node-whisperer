@@ -47,6 +47,26 @@ export default function ChatInterface({ onNodeRequest, currentScope }: ChatInter
     console.log(`Adding ${chainType} chain to canvas`);
   };
 
+  // Helper function to convert chat artifacts to node blocks
+  const convertArtifactToNodes = (artifact: ChatArtifact): NodeBlockData[] => {
+    if (artifact.type === 'code' && artifact.language === 'python') {
+      // Extract node information from code content
+      const nodeType = artifact.title.toLowerCase().includes('llm') ? 'llm' :
+                      artifact.title.toLowerCase().includes('tool') ? 'tool' :
+                      artifact.title.toLowerCase().includes('agent') ? 'agent' : 'system';
+      
+      return [{
+        id: `node-${artifact.id}`,
+        type: nodeType as any,
+        title: artifact.title,
+        description: `Generated from: ${artifact.language} implementation`,
+        status: 'idle',
+        config: { source: 'chat-generated' }
+      }];
+    }
+    return [];
+  };
+
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
       const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
