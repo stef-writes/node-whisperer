@@ -348,7 +348,7 @@ export default function ChatInterface({ onNodeRequest, currentScope }: ChatInter
                                 )}
 
                                 {/* Other artifact types */}
-                                {!['diagram', 'mermaid', 'code', 'spec', 'analysis'].includes(artifact.type) && (
+                                {!['diagram', 'mermaid', 'code', 'spec', 'analysis', 'nodes'].includes(artifact.type) && (
                                   <div className="bg-card/50 border border-border rounded-lg p-3">
                                     <div className="flex items-center gap-2 mb-2">
                                       <FileText size={12} className="text-muted-foreground" />
