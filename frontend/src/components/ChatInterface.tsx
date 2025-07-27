@@ -390,38 +390,65 @@ export default function ChatInterface({ onNodeRequest, currentScope }: ChatInter
 
       {/* Quick Actions */}
       <div className="p-4 border-t border-chat-border">
+        {/* Node Examples Section - Cursor-like */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Bot size={12} className="text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground">Available Nodes</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {createSampleNodes().slice(0, 4).map((node) => (
+              <NodeBlock
+                key={node.id}
+                node={node}
+                compact={true}
+                onDeploy={(node) => {
+                  console.log('Quick deploying node:', node);
+                  toast({
+                    title: "Node Deployed",
+                    description: `${node.title} added to canvas`,
+                    duration: 2000,
+                  });
+                }}
+                className="cursor-pointer hover:shadow-sm transition-all"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Workflow Templates */}
         <div className="flex flex-wrap gap-2 mb-3">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleAddToCanvas('intake')}
+            onClick={() => setInput('Create inventory intake workflow with CSV reader and deduplication')}
             className="text-xs h-7 hover-scale"
           >
-            Inventory Intake
+            📦 Inventory Intake
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleAddToCanvas('enrichment')}
+            onClick={() => setInput('Build product enrichment chain with AI title generation and pricing')}
             className="text-xs h-7 hover-scale"
           >
-            Product Enrichment
+            ✨ Product Enrichment
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleAddToCanvas('publisher')}
+            onClick={() => setInput('Setup platform publisher for Facebook, eBay and Amazon')}
             className="text-xs h-7 hover-scale"
           >
-            Platform Publisher
+            🚀 Platform Publisher
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setInput('Deploy complete workflow with all chains')}
+            onClick={() => setInput('Deploy complete social media automation workflow')}
             className="text-xs h-7 hover-scale"
           >
-            Complete Workflow
+            🎯 Complete Workflow
           </Button>
         </div>
         
