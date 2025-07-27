@@ -1,5 +1,6 @@
 import { ChatMessage, ChatService as IChatService, ChatSuggestion, ChatArtifact, ScopeObject } from '@/types/workflow';
 import { getChainConfig, getAllChainTypes } from '@/config/chainConfigs';
+import { createSampleNodes, generateContextualNodes, createWorkflowNodes } from '@/data/nodeExamples';
 
 class ChatService implements IChatService {
   private messageHistory: ChatMessage[] = [];
