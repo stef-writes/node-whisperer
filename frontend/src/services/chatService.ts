@@ -222,6 +222,18 @@ Would you like me to see what nodes (tools, LLM Nodes, or Agents) we have availa
 +            self.logger.error(f"Error reading CSV: {str(e)}")
 +            raise`,
             action: 'CREATE_MISSING_TOOLS'
+          },
+          {
+            id: 'inventory-nodes',
+            type: 'nodes',
+            title: 'Generated Inventory Processing Nodes',
+            content: JSON.stringify(generateContextualNodes('inventory surplus')),
+            action: 'SHOW_NODES',
+            metadata: {
+              nodeCount: 3,
+              types: ['tool', 'llm'],
+              workflow: 'inventory_processing'
+            }
           }
         ],
         suggestions: [
