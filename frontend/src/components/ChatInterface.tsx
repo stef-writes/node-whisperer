@@ -229,6 +229,38 @@ export default function ChatInterface({ onNodeRequest, currentScope }: ChatInter
                                   />
                                 )}
 
+                                {/* Node Blocks for direct node artifacts */}
+                                {artifact.type === 'nodes' && (
+                                  <div className="bg-card/30 border border-border rounded-lg p-3">
+                                    <div className="flex items-center gap-2 mb-3">
+                                      <Bot size={12} className="text-muted-foreground" />
+                                      <span className="text-xs font-medium text-foreground">{artifact.title}</span>
+                                      {artifact.metadata && (
+                                        <Badge variant="outline" className="text-xs h-4 px-1.5">
+                                          {artifact.metadata.nodeCount || 0} nodes
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    <NodeBlockGrid
+                                      nodes={JSON.parse(artifact.content)}
+                                      onDeploy={(node) => {
+                                        console.log('Deploying node:', node);
+                                        toast({
+                                          title: "Node Deployed",
+                                          description: `${node.title} added to canvas`,
+                                          duration: 2000,
+                                        });
+                                      }}
+                                      onConfigure={(node) => {
+                                        console.log('Configuring node:', node);
+                                      }}
+                                      onViewDetails={(node) => {
+                                        console.log('Viewing node details:', node);
+                                      }}
+                                    />
+                                  </div>
+                                )}
+
                                 {/* Node Blocks for Code/Implementation */}
                                 {artifact.type === 'code' && (
                                   <div className="space-y-3">
